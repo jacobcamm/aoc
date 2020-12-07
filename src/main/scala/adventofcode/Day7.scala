@@ -25,20 +25,60 @@ object Day7 extends App {
         val contains =
           split(1)
             .split(", ")
-            .map(x => (x.split(" bags")(0).drop(2).trim, x.take(1).toInt))
+            .map(x => (x.split(" bag")(0).drop(2).trim, x.take(1).toInt))
 
         Bag(colour, Some(contains.toMap))
       }
-
     }
   }
 
   val input = readResource("Day7.txt")
 
-  println(input.map(Bag(_)))
+  @tailrec
+  def searchTopBags(colours: List[String],
+                    currentPossibleBags: Set[Bag],
+                    allBags: List[Bag]): Set[Bag] = {
+    val bagsContainsColour =
+      allBags
+        .filter(
+          x =>
+            x.contains.fold(false)(y => y.exists(z => colours.contains(z._1)))
+        )
+        .toSet
 
-  println(s"Day 2 Part 1: ")
+    val allPossibilities = bagsContainsColour ++ currentPossibleBags
 
-  println(s"Day 2 Part 2: ")
+    val newPossibilities = allPossibilities -- currentPossibleBags
+
+    if (newPossibilities.isEmpty) currentPossibleBags
+    else
+      searchTopBags(
+        newPossibilities.map(_.colour).toList,
+        allPossibilities,
+        allBags
+      )
+  }
+
+  def howManyBags(colour: String, allBags: List[Bag]): Int = {
+    val currentBag = allBags.filter(_.colour == colour).head
+
+    currentBag.contains match {
+      case Some(x) =>
+        x.map { k =>
+          val bagsInBags = howManyBags(k._1, allBags)
+          val totalBags = k._2 + (k._2 * bagsInBags)
+          totalBags
+        }.sum
+      case None => 0
+    }
+  }
+
+  val bags = input.map(Bag(_)).toList
+
+  println(
+    s"Day 7 Part 1: ${searchTopBags(List("shiny gold"), Set(), bags).size}"
+  )
+
+  println(s"Day 2 Part 2: ${howManyBags("shiny gold", bags)}")
 
 }
