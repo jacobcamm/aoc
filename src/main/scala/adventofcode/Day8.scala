@@ -61,18 +61,22 @@ object Day8 extends App {
                          instructions: List[Instruction],
                          accumulator: Int,
                          changed: Int,
-                         originalRun: Option[List[Int]]): Int = {
+                         originalRun: Option[List[Int]],
+                         fixInstructions: Boolean): Int = {
     if (currentPosition > instructions.size - 1) accumulator
     else if (oldPositions.contains(currentPosition)) {
-      val orRun = originalRun.getOrElse(oldPositions)
-      searchInstructions(
-        List(),
-        0,
-        updateInstruction(orRun, instructions, changed),
-        0,
-        changed + 1,
-        Some(orRun)
-      )
+      if (fixInstructions) {
+        val orRun = originalRun.getOrElse(oldPositions)
+        searchInstructions(
+          List(),
+          0,
+          updateInstruction(orRun, instructions, changed),
+          0,
+          changed + 1,
+          Some(orRun),
+          fixInstructions
+        )
+      } else accumulator
     } else {
       val newPositions = oldPositions :+ currentPosition
       val currentInstruction = instructions(currentPosition)
@@ -90,18 +94,19 @@ object Day8 extends App {
         instructions,
         newAccumulator,
         changed,
-        originalRun
+        originalRun,
+        fixInstructions
       )
     }
   }
 
   val input = readResource("Day8.txt")
 
-  val firstDouble = searchInstructions(List(), 0, input, 0, 0, None)
-  println(input)
+  val firstDouble = searchInstructions(List(), 0, input, 0, 0, None, false)
+  val fixedSolution = searchInstructions(List(), 0, input, 0, 0, None, true)
 
   println(s"Day 7 Part 1: $firstDouble")
 
-  println(s"Day 2 Part 2:")
+  println(s"Day 2 Part 2: $fixedSolution")
 
 }
