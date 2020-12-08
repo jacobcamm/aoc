@@ -34,25 +34,30 @@ object Day8 extends App {
   @tailrec
   def getLatestNopOrJmp(oldPositions: List[Int],
                         instructions: List[Instruction],
-                        changed: Int): Int = {
-    instructions(oldPositions(oldPositions.size - 1 - changed)) match {
+                        dropped: Int): (Int, Int) = {
+    instructions(oldPositions.last) match {
       case Instruction("nop", _) | Instruction("jmp", _) =>
-        oldPositions(oldPositions.size - 1 - changed)
+        (oldPositions.last, dropped)
       case _ =>
-        getLatestNopOrJmp(oldPositions.dropRight(1), instructions, changed)
+        getLatestNopOrJmp(oldPositions.dropRight(1), instructions, dropped + 1)
     }
   }
 
-  def updateInstruction(oldPositions: List[Int],
+  def updateInstruction(originalPositions: List[Int],
                         instructions: List[Instruction],
-                        changed: Int): List[Instruction] = {
-    val latestNopJmp = getLatestNopOrJmp(oldPositions, instructions, changed)
+                        dropped: Int): (List[Instruction], Int) = {
+    val (latestNopJmp, newDropped) =
+      getLatestNopOrJmp(
+        originalPositions.dropRight(dropped),
+        instructions,
+        dropped
+      )
 
     val newInstruction = instructions(latestNopJmp) match {
       case Instruction("nop", distance) => Instruction("jmp", distance)
       case Instruction("jmp", distance) => Instruction("nop", distance)
     }
-    instructions.updated(latestNopJmp, newInstruction)
+    (instructions.updated(latestNopJmp, newInstruction), newDropped)
   }
 
   @tailrec
@@ -60,19 +65,21 @@ object Day8 extends App {
                          currentPosition: Int,
                          instructions: List[Instruction],
                          accumulator: Int,
-                         changed: Int,
+                         dropped: Int,
                          originalRun: Option[List[Int]],
                          fixInstructions: Boolean): Int = {
-    if (currentPosition > instructions.size - 1) accumulator
+    if (currentPosition >= instructions.size) accumulator
     else if (oldPositions.contains(currentPosition)) {
       if (fixInstructions) {
         val orRun = originalRun.getOrElse(oldPositions)
+        val (newInstructions, dropped) =
+          updateInstruction(orRun, instructions, dropped)
         searchInstructions(
           List(),
           0,
-          updateInstruction(orRun, instructions, changed),
+          newInstructions,
           0,
-          changed + 1,
+          dropped + 1,
           Some(orRun),
           fixInstructions
         )
