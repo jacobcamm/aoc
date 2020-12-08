@@ -97,7 +97,7 @@ object Day8 extends App {
 
   val input = readResource("Day8.txt")
 
-  val firstDouble = searchInstructions(List(), 0, input, 0, 0, List())
+  val firstDouble = searchInstructions(List(), 0, input, 0, 0, None)
   println(input)
 
   println(s"Day 7 Part 1: $firstDouble")
