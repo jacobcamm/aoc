@@ -61,50 +61,37 @@ object Day8 extends App {
                          instructions: List[Instruction],
                          accumulator: Int,
                          changed: Int,
-                         originalRun: List[Int]): Int = {
-    if (oldPositions.contains(currentPosition)) {
-      val orRun = if (originalRun == List()) oldPositions else originalRun
+                         originalRun: Option[List[Int]]): Int = {
+    if (currentPosition > instructions.size - 1) accumulator
+    else if (oldPositions.contains(currentPosition)) {
+      val orRun = originalRun.getOrElse(oldPositions)
       searchInstructions(
         List(),
         0,
         updateInstruction(orRun, instructions, changed),
         0,
         changed + 1,
-        orRun
+        Some(orRun)
       )
-    } else if (currentPosition > instructions.size - 1) accumulator
-    else {
+    } else {
       val newPositions = oldPositions :+ currentPosition
       val currentInstruction = instructions(currentPosition)
-      currentInstruction match {
+      val (newPosition, newAccumulator) = currentInstruction match {
         case Instruction("acc", distance) =>
-          searchInstructions(
-            newPositions,
-            currentPosition + 1,
-            instructions,
-            accumulator + distance,
-            changed,
-            originalRun
-          )
+          (currentPosition + 1, accumulator + distance)
         case Instruction("nop", _) =>
-          searchInstructions(
-            newPositions,
-            currentPosition + 1,
-            instructions,
-            accumulator,
-            changed,
-            originalRun
-          )
+          (currentPosition + 1, accumulator)
         case Instruction("jmp", distance) =>
-          searchInstructions(
-            newPositions,
-            currentPosition + distance,
-            instructions,
-            accumulator,
-            changed,
-            originalRun
-          )
+          (currentPosition + distance, accumulator)
       }
+      searchInstructions(
+        newPositions,
+        newPosition,
+        instructions,
+        newAccumulator,
+        changed,
+        originalRun
+      )
     }
   }
 
