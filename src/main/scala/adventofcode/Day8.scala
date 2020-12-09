@@ -72,14 +72,14 @@ object Day8 extends App {
     else if (oldPositions.contains(currentPosition)) {
       if (fixInstructions) {
         val orRun = originalRun.getOrElse(oldPositions)
-        val (newInstructions, dropped) =
+        val (newInstructions, newDropped) =
           updateInstruction(orRun, instructions, dropped)
         searchInstructions(
           List(),
           0,
           newInstructions,
           0,
-          dropped + 1,
+          newDropped + 1,
           Some(orRun),
           fixInstructions
         )
@@ -100,7 +100,7 @@ object Day8 extends App {
         newPosition,
         instructions,
         newAccumulator,
-        changed,
+        dropped,
         originalRun,
         fixInstructions
       )
