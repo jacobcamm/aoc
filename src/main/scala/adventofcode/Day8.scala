@@ -2,6 +2,7 @@ package adventofcode
 
 import scala.annotation.tailrec
 import scala.io.Source
+import adventofcode.Utils._
 
 object Day8 extends App {
 
@@ -107,13 +108,17 @@ object Day8 extends App {
     }
   }
 
-  val input = readResource("Day8.txt")
+  lazy val input = readResource("Day8.txt")
 
-  val firstDouble = searchInstructions(List(), 0, input, 0, 0, None, false)
-  val fixedSolution = searchInstructions(List(), 0, input, 0, 0, None, true)
+  val firstDouble = time(
+    searchInstructions(List(), 0, input, 0, 0, None, false)
+  )
+  val fixedSolution = time(
+    searchInstructions(List(), 0, input, 0, 0, None, true)
+  )
 
-  println(s"Day 7 Part 1: $firstDouble")
+  println(s"Day 8 Part 1: $firstDouble")
 
-  println(s"Day 2 Part 2: $fixedSolution")
+  println(s"Day 8 Part 2: $fixedSolution")
 
 }

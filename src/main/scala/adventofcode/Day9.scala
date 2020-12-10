@@ -2,6 +2,7 @@ package adventofcode
 
 import scala.annotation.tailrec
 import scala.io.Source
+import adventofcode.Utils._
 
 object Day9 extends App {
 
@@ -23,12 +24,11 @@ object Day9 extends App {
                    currentValue: BigDecimal,
                    remainingList: List[BigDecimal]): BigDecimal = {
     val possibleSum =
-      prev25
-        .take(25)
+      prev25.distinct
         .filter(_ != currentValue)
         .combinations(2)
         .toList
-        .filter(x => x.head != x.last && x.head + x.last == currentValue)
+        .filter(x => x.head + x.last == currentValue)
 
     if (possibleSum.isEmpty) currentValue
     else if (remainingList.isEmpty) currentValue
@@ -61,13 +61,6 @@ object Day9 extends App {
     time(findWeakness(input.take(25), input(25), input.drop(26)))
   val exploitWeakness: BigDecimal = time(exploitWeakness(input, 0, weakNumber))
 
-  def time[R](block: => R): R = {
-    val t0 = System.currentTimeMillis()
-    val result = block // call-by-name
-    val t1 = System.currentTimeMillis()
-    println("Elapsed time: " + (t1 - t0) + "ms")
-    result
-  }
   println(s"Day 7 Part 1: $weakNumber")
 
   println(s"Day 2 Part 2: $exploitWeakness")
