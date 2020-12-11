@@ -228,6 +228,7 @@ object Day11 extends App {
     (for {
       row <- input.indices
       column <- input.head.indices
+      if input(row)(column) != '.'
     } yield
       (row, column) -> createSightLines(
         row,
@@ -256,6 +257,7 @@ object Day11 extends App {
   val adjacentPositions = (for {
     row <- input.indices
     column <- input.head.indices
+    if input(row)(column) != '.'
   } yield (row, column) -> createAdjacent(row, column, input)).toMap
 
   def sightlineCheckWithSights = sightlineCheck(_, _, _, positionToSightLines)
