@@ -85,4 +85,18 @@ object Day10 extends App {
     s"Day 2 Part 2: ${time(checkPossibilities(sorted.head, sorted.tail, Map(0 -> BigDecimal(1))))}"
   )
 
+  def checkDif(current: Int,
+               remaining: List[Int],
+               currentDiffs: List[Int]): List[Int] = {
+    if (remaining.isEmpty) currentDiffs
+    else
+      checkDif(
+        remaining.head,
+        remaining.tail,
+        currentDiffs :+ remaining.head - current
+      )
+  }
+
+  println(checkDif(sorted.head, sorted.tail, List()))
+
 }
